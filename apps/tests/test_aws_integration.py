@@ -1,8 +1,8 @@
 from unittest.mock import patch
 from unittest import TestCase
 from unittest.mock import MagicMock
-from zoomApp import upload_to_s3
-from zoomApp.utils import transcribe_audio
+from apps import upload_to_s3
+from apps.utils import transcribe_audio
 
 # test_aws_integration.py
 class AWSIntegrationTestCase(TestCase):

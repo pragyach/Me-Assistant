@@ -1,6 +1,7 @@
 from unittest.mock import patch
 from unittest import TestCase
-from zoomApp.utils import get_zoom_recordings
+from apps.zoom import get_zoom_recordings
+from apps.zoom import zoom_recording_to_text_and_upload
 
 
 

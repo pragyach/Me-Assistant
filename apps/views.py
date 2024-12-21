@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .utils import zoom_recording_to_text_and_upload
+from .zoom import zoom_recording_to_text_and_upload
 
 def list_meetings_and_notes(request):
     access_token = "your-zoom-access-token"
