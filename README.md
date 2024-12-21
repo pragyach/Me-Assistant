@@ -1,83 +1,48 @@
 # Meeting Assistant Project
 
 ## Overview
-Meeting Assistant is a Django-based application designed to help officials seamlessly manage Zoom meeting recordings and transcriptions. It integrates with Zoom API, AWS S3, and AWS Transcribe to fetch, process, and store recordings in an efficient and scalable manner.
+Meeting Assistant is a Django-based application enhanced with Databricks integration for scalable transcription storage, Natural Language Processing (NLP) for transcription analysis, and an analytics dashboard for real-time insights. It supports Zoom, Google Meet, and Microsoft Teams for managing recordings.
 
 ## Features
-- Fetch recordings from the Zoom API using OAuth tokens.
-- Transcribe recordings using AWS Transcribe for automated note-taking.
-- Upload recordings to AWS S3 for secure and scalable storage.
-- Store and manage transcription data in a relational database using Django ORM.
-- Display meeting details and their respective transcriptions on a user-friendly HTML interface.
+- Fetch recordings from Zoom, Google Meet, and Microsoft Teams.
+- Transcribe recordings using AWS Transcribe.
+- Perform NLP tasks like sentiment analysis and topic extraction on transcription data.
+- Store transcription metadata in PostgreSQL and Delta Lake for efficient querying.
+- Visualize data trends in an analytics dashboard.
 
 ## Tech Stack
+### Backend
+- **Django**: Web framework for handling APIs, database operations, and view rendering.
+- **Celery**: For asynchronous task processing.
+- **Databricks**: For scalable transcription data storage and analytics.
+- **Delta Lake**: Provides ACID-compliant, scalable data storage on S3.
 
-### 1. **Django**
-- **Why:**
-  Django provides a high-level web framework with built-in features like ORM, admin interface, and routing. Its modular structure allowed us to develop a scalable application with minimal effort.
-- **Useful Links:**
-  - [Django Official Documentation](https://docs.djangoproject.com/)
-  - [Django Tutorials](https://www.djangoproject.com/start/)
+### APIs
+- **Zoom API**: Fetch meeting recordings programmatically.
+- **Google Meet API**: Manage and process Google Meet recordings.
+- **Microsoft Teams API**: Integrate Microsoft Teams for recording management.
 
-### 2. **Celery with Redis**
-- **Why:**
-  Celery handles asynchronous task execution, such as processing Zoom recordings and uploading files to S3 without blocking the main application thread. Redis serves as the message broker for task queues.
-- **Useful Links:**
-  - [Celery Documentation](https://docs.celeryproject.org/)
-  - [Redis Official Site](https://redis.io/)
+### Cloud Services
+- **AWS S3**: Scalable storage for audio files and transcription metadata.
+- **AWS Transcribe**: Automatic transcription of audio recordings.
 
-### 3. **Zoom API**
-- **Why:**
-  The Zoom API enables us to fetch meeting recordings programmatically, providing a seamless integration with existing Zoom accounts.
-- **Useful Links:**
-  - [Zoom API Documentation](https://marketplace.zoom.us/docs/api-reference/introduction)
-  - [Creating a Zoom OAuth App](https://marketplace.zoom.us/docs/guides/build/oauth)
+### NLP
+- **Hugging Face Transformers**: Sentiment analysis for transcription data.
+- **Spark NLP**: Tokenization and topic extraction.
 
-### 4. **AWS S3**
-- **Why:**
-  AWS S3 is used for storing meeting recordings securely. Its scalability and availability ensure the application can handle large files efficiently.
-- **Useful Links:**
-  - [AWS S3 Overview](https://aws.amazon.com/s3/)
-  - [AWS CLI for S3](https://aws.amazon.com/cli/)
-
-### 5. **AWS Transcribe**
-- **Why:**
-  AWS Transcribe automates the transcription of meeting recordings into text. It eliminates the need for manual note-taking and ensures high accuracy.
-- **Useful Links:**
-  - [AWS Transcribe Documentation](https://aws.amazon.com/transcribe/)
-  - [AWS SDK for Python (Boto3)](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html)
-
-### 6. **HTML and CSS**
-- **Why:**
-  Used to create a simple, user-friendly interface for displaying meeting details and transcriptions.
-- **Useful Links:**
-  - [HTML Tutorial](https://www.w3schools.com/html/)
-  - [CSS Reference](https://developer.mozilla.org/en-US/docs/Web/CSS)
-
-### 7. **SQLite (Development)** / **PostgreSQL (Production)**
-- **Why:**
-  SQLite is lightweight and perfect for development environments, while PostgreSQL is a robust relational database suitable for production with large-scale data requirements.
-- **Useful Links:**
-  - [SQLite Documentation](https://www.sqlite.org/docs.html)
-  - [PostgreSQL Official Documentation](https://www.postgresql.org/docs/)
-
-### 8. **Testing Frameworks**
-- **Django TestCase:** Used for unit testing the application.
-- **unittest.mock:** Mocking external services like Zoom API, AWS S3, and AWS Transcribe.
-- **Useful Links:**
-  - [Django Testing](https://docs.djangoproject.com/en/dev/topics/testing/overview/)
-  - [Python Mock Documentation](https://docs.python.org/3/library/unittest.mock.html)
+### Frontend
+- **HTML/CSS**: For rendering the analytics dashboard.
 
 ## Setup
-
 ### Prerequisites
 1. Python 3.8+
 2. Redis server (for Celery)
-3. AWS credentials (for S3 and Transcribe)
-4. Zoom OAuth App credentials
+3. AWS credentials for S3 and Transcribe
+4. Databricks account with Delta Lake configured
+5. Zoom, Google Meet, and Microsoft Teams API credentials
 
 ### Installation
-1. Clone this repository:
+1. Clone the repository:
    ```bash
    git clone https://github.com/your-repo/meeting-assistant.git
    cd meeting-assistant
@@ -94,14 +59,17 @@ Meeting Assistant is a Django-based application designed to help officials seaml
    pip install -r requirements.txt
    ```
 
-4. Configure environment variables:
-   - Create a `.env` file in the root directory.
-   - Add the following variables:
+4. Set up environment variables:
+   - Create a `.env` file in the root directory and add:
      ```env
      AWS_ACCESS_KEY_ID=your-aws-access-key
      AWS_SECRET_ACCESS_KEY=your-aws-secret-key
      S3_BUCKET_NAME=your-s3-bucket-name
-     ZOOM_OAUTH_TOKEN=your-zoom-oauth-token
+     DATABRICKS_HOST=your-databricks-host
+     DATABRICKS_TOKEN=your-databricks-token
+     ZOOM_API_KEY=your-zoom-api-key
+     GMEET_CLIENT_ID=your-google-client-id
+     TEAMS_API_KEY=your-teams-api-key
      CELERY_BROKER_URL=redis://localhost:6379/0
      ```
 
@@ -118,15 +86,38 @@ Meeting Assistant is a Django-based application designed to help officials seaml
 
 7. Start the Celery worker:
    ```bash
-   celery -A meeting_assistant worker --loglevel=info
+   celery -A mili_project worker --loglevel=info
    ```
 
 ## Usage
-1. Open your browser and navigate to:
-   ```
-   http://127.0.0.1:8000/meetings/
-   ```
-2. View a list of meetings with their transcriptions and recording links.
+1. Process recordings from a platform (Zoom, Google Meet, or Teams):
+   - Trigger tasks via Celery to fetch and process recordings.
+   - Transcriptions and metadata will be stored in Delta Lake and PostgreSQL.
+
+2. View analytics:
+   - Access the analytics dashboard at `/analytics/`.
+   - Insights include platform usage trends and sentiment analysis.
+
+## Example Workflow
+### Processing Recordings
+```python
+from zoom_app.tasks import process_recordings
+
+# Example for Zoom
+platform = "Zoom"
+meeting_id = "example_zoom_meeting"
+access_token = "example_access_token"
+process_recordings.delay(platform, meeting_id, access_token)
+```
+
+### Analytics Dashboard
+```python
+# Query analytics data
+from databricks_utils import query_delta_table
+
+data = query_delta_table("s3://your-bucket-name/meetings/")
+data.show()
+```
 
 ## Testing
 Run the tests to validate the application:
@@ -135,7 +126,17 @@ python manage.py test
 ```
 
 ## Future Enhancements
-- Add user authentication to manage individual Zoom accounts securely.
-- Implement real-time updates for transcription progress using WebSockets.
-- Support additional video conferencing platforms (e.g., Microsoft Teams, Google Meet).
+- Support additional video conferencing platforms.
+- Extend NLP processing to include summarization and entity extraction.
+- Add role-based authentication for better user management.
+- Real-time transcription monitoring with WebSockets.
 
+## Key Features Implemented
+- Scalable data storage with Databricks and Delta Lake.
+- NLP tasks for sentiment analysis and topic extraction.
+- Analytics dashboard for transcription insights.
+- Asynchronous task processing with Celery.
+
+
+
+Let me know if you need additional help or have further questions! 🚀
