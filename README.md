@@ -139,4 +139,3 @@ python manage.py test
 - Implement real-time updates for transcription progress using WebSockets.
 - Support additional video conferencing platforms (e.g., Microsoft Teams, Google Meet).
 
-"""
