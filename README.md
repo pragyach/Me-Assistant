@@ -1,7 +1,7 @@
 # Meeting Assistant Project
 
 ## Overview
-Meeting Assistant is a Django-based application designed to help Wealth Advisors manage Zoom meeting recordings and transcriptions seamlessly. It integrates with Zoom API, AWS S3, and AWS Transcribe to fetch, process, and store recordings in an efficient and scalable manner.
+Meeting Assistant is a Django-based application designed to help officials seamlessly manage Zoom meeting recordings and transcriptions. It integrates with Zoom API, AWS S3, and AWS Transcribe to fetch, process, and store recordings in an efficient and scalable manner.
 
 ## Features
 - Fetch recordings from the Zoom API using OAuth tokens.
