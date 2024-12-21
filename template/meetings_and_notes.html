@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meetings and Notes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .meeting {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+        }
+        .transcription {
+            margin-top: 10px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Meetings and Transcriptions</h1>
+    {% for meeting in meeting_data %}
+        <div class="meeting">
+            <h2>Meeting ID: {{ meeting.meeting_id }}</h2>
+            {% if meeting.results %}
+                <ul>
+                    {% for result in meeting.results %}
+                        <li>
+                            <p><strong>Recording ID:</strong> {{ result.recording_id }}</p>
+                            <p class="transcription"><strong>Transcription:</strong> {{ result.transcription }}</p>
+                            <p><strong>Recording URL:</strong> <a href="{{ result.s3_url }}" target="_blank">Download</a></p>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No recordings or transcriptions available for this meeting.</p>
+            {% endif %}
+        </div>
+    {% endfor %}
+</body>
+</html>
