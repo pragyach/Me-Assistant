@@ -1,8 +1,8 @@
 # test_integration.py
 from unittest.mock import patch
 from unittest import TestCase
-from zoomApp.utils import zoom_recording_to_text_and_upload
-from zoomApp.models import Meeting
+from apps.zoom import zoom_recording_to_text_and_upload
+from apps.models import Meeting
 
 class ZoomIntegrationTestCase(TestCase):
 
