@@ -1,3 +1,4 @@
+
 # Meeting assitant Project
 
 ## Overview
@@ -14,3 +15,4 @@ This is a Django-based project for managing Zoom meeting recordings. The project
 2. Install dependencies:
    ```bash
    pip install -r requirements.txt
+
