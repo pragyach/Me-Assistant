@@ -1,6 +1,3 @@
-
-# README
-"""
 # Meeting Assistant Project
 
 ## Overview
