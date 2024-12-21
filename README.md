@@ -1,5 +1,5 @@
 
-# README.md
+# README
 """
 # Meeting Assistant Project
 
