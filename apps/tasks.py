@@ -1,6 +1,45 @@
 from celery import shared_task
 from .utils import get_zoom_recordings, transcribe_audio, upload_to_s3
 from .models import Meeting
+from apps.utils import process_transcription_to_databricks
+from apps.zoom import get_zoom_recordings
+from apps.gmeet import get_gmeet_recordings
+from apps.teams import get_teams_recordings
+from apps.utils import transcribe_audio, upload_to_s3
+
+DELTA_TABLE_PATH = "s3://your-bucket-name/meetings/"
+
+@shared_task
+def process_recordings(platform, meeting_id, access_token):
+    # Fetch recordings based on the platform
+    if platform == "Zoom":
+        recordings = get_zoom_recordings(meeting_id, access_token)
+    elif platform == "GMeet":
+        recordings = get_gmeet_recordings(meeting_id, access_token)
+    elif platform == "Teams":
+        recordings = get_teams_recordings(meeting_id, access_token)
+    else:
+        raise ValueError("Unsupported platform")
+
+    for recording in recordings:
+        try:
+            audio_url = recording["download_url"]
+            job_name = f"{platform}-transcription-{recording['id']}"
+
+            # Transcribe the audio
+            transcription = transcribe_audio(audio_url, job_name)
+
+            # Upload the file to S3
+            s3_key = f"recordings/{platform}/{recording['id']}.mp4"
+            s3_url = upload_to_s3(audio_url, s3_key)
+
+            # Process and save transcription data to Databricks
+            process_transcription_to_databricks(
+                meeting_id, platform, transcription, s3_url, DELTA_TABLE_PATH
+            )
+        except Exception as e:
+            print(f"Error processing recording {recording['id']}: {e}")
+
 
 @shared_task
 def process_zoom_recording(meeting_id, access_token):

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard</title>
+</head>
+<body>
+    <h1>Analytics Dashboard</h1>
+
+    <h2>Platform Usage</h2>
+    <ul>
+        {% for platform in platform_data %}
+            <li>{{ platform['platform'] }}: {{ platform['count'] }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Sentiment Trends</h2>
+    <ul>
+        {% for sentiment in sentiment_data %}
+            <li>{{ sentiment['sentiment'] }}: {{ sentiment['count'] }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

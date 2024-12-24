@@ -1,5 +1,25 @@
 import requests
 import boto3
+from databricks_utils import save_to_delta
+from nlp_processing import sentiment_analysis
+
+# Save meeting transcription to Delta Lake with NLP tasks
+def process_transcription_to_databricks(meeting_id, platform, transcription, s3_url, delta_table_path):
+    # Perform sentiment analysis
+    sentiment = sentiment_analysis(transcription)[0]
+
+    # Save to Delta Lake
+    save_to_delta(
+        [{
+            "meeting_id": meeting_id,
+            "platform": platform,
+            "transcription": transcription,
+            "sentiment": sentiment["label"],
+            "sentiment_score": sentiment["score"],
+            "recording_url": s3_url,
+        }],
+        delta_table_path,
+    )
 
 def transcribe_audio(audio_url, job_name):
     """
