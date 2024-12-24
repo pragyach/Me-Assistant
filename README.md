@@ -119,6 +119,36 @@ data = query_delta_table("s3://your-bucket-name/meetings/")
 data.show()
 ```
 
+### High-Level Architecture
+                    +-------------------------------+
+                    |       Load Balancer           |
+                    +-------------------------------+
+                        |                |
+            +-----------------+    +-----------------+
+            |     Web Server  |    |  Web Server     |
+            |   (Django/ASGI) |    |   (Django)      |
+            +-----------------+    +-----------------+
+                        |                |
+                        +----------------+
+                                |
+         +---------------------------------------------+
+         |                Message Broker               |
+         |           (Redis for WebSockets)           |
+         +---------------------------------------------+
+                                |
+              +---------------------+---------------------+
+              |                     |                     |
+  +--------------------+   +--------------------+   +--------------------+
+  |   Task Queue (API)  |   |   File Storage    |   | Database (RDS)     |
+  |   (Celery + Redis)  |   |   (AWS S3)        |   | Postgres/Delta)    |
+  +--------------------+   +--------------------+   +--------------------+
+              |                     |                     |
+   +------------------+  +--------------------+  +-----------------------+
+   | Transcription API |  | Recording Files   |  | Metadata & Insights   |
+   | (AWS Transcribe)  |  | & Transcripts     |  | (User-facing queries) |
+   +------------------+  +--------------------+  +-----------------------+
+
+
 ## Testing
 Run the tests to validate the application:
 ```bash
